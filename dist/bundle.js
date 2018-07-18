@@ -2795,6 +2795,608 @@
   
   /***/ }),
   
+  /***/ "./node_modules/prop-types/factoryWithTypeCheckers.js":
+  /*!************************************************************!*\
+    !*** ./node_modules/prop-types/factoryWithTypeCheckers.js ***!
+    \************************************************************/
+  /*! no static exports found */
+  /***/ (function(module, exports, __webpack_require__) {
+  
+  "use strict";
+  /**
+   * Copyright (c) 2013-present, Facebook, Inc.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   */
+  
+  
+  
+  var assign = __webpack_require__(/*! object-assign */ "./node_modules/object-assign/index.js");
+  
+  var ReactPropTypesSecret = __webpack_require__(/*! ./lib/ReactPropTypesSecret */ "./node_modules/prop-types/lib/ReactPropTypesSecret.js");
+  var checkPropTypes = __webpack_require__(/*! ./checkPropTypes */ "./node_modules/prop-types/checkPropTypes.js");
+  
+  var printWarning = function() {};
+  
+  if (true) {
+    printWarning = function(text) {
+      var message = 'Warning: ' + text;
+      if (typeof console !== 'undefined') {
+        console.error(message);
+      }
+      try {
+        // --- Welcome to debugging React ---
+        // This error was thrown as a convenience so that you can use this stack
+        // to find the callsite that caused this warning to fire.
+        throw new Error(message);
+      } catch (x) {}
+    };
+  }
+  
+  function emptyFunctionThatReturnsNull() {
+    return null;
+  }
+  
+  module.exports = function(isValidElement, throwOnDirectAccess) {
+    /* global Symbol */
+    var ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
+    var FAUX_ITERATOR_SYMBOL = '@@iterator'; // Before Symbol spec.
+  
+    /**
+     * Returns the iterator method function contained on the iterable object.
+     *
+     * Be sure to invoke the function with the iterable as context:
+     *
+     *     var iteratorFn = getIteratorFn(myIterable);
+     *     if (iteratorFn) {
+     *       var iterator = iteratorFn.call(myIterable);
+     *       ...
+     *     }
+     *
+     * @param {?object} maybeIterable
+     * @return {?function}
+     */
+    function getIteratorFn(maybeIterable) {
+      var iteratorFn = maybeIterable && (ITERATOR_SYMBOL && maybeIterable[ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL]);
+      if (typeof iteratorFn === 'function') {
+        return iteratorFn;
+      }
+    }
+  
+    /**
+     * Collection of methods that allow declaration and validation of props that are
+     * supplied to React components. Example usage:
+     *
+     *   var Props = require('ReactPropTypes');
+     *   var MyArticle = React.createClass({
+     *     propTypes: {
+     *       // An optional string prop named "description".
+     *       description: Props.string,
+     *
+     *       // A required enum prop named "category".
+     *       category: Props.oneOf(['News','Photos']).isRequired,
+     *
+     *       // A prop named "dialog" that requires an instance of Dialog.
+     *       dialog: Props.instanceOf(Dialog).isRequired
+     *     },
+     *     render: function() { ... }
+     *   });
+     *
+     * A more formal specification of how these methods are used:
+     *
+     *   type := array|bool|func|object|number|string|oneOf([...])|instanceOf(...)
+     *   decl := ReactPropTypes.{type}(.isRequired)?
+     *
+     * Each and every declaration produces a function with the same signature. This
+     * allows the creation of custom validation functions. For example:
+     *
+     *  var MyLink = React.createClass({
+     *    propTypes: {
+     *      // An optional string or URI prop named "href".
+     *      href: function(props, propName, componentName) {
+     *        var propValue = props[propName];
+     *        if (propValue != null && typeof propValue !== 'string' &&
+     *            !(propValue instanceof URI)) {
+     *          return new Error(
+     *            'Expected a string or an URI for ' + propName + ' in ' +
+     *            componentName
+     *          );
+     *        }
+     *      }
+     *    },
+     *    render: function() {...}
+     *  });
+     *
+     * @internal
+     */
+  
+    var ANONYMOUS = '<<anonymous>>';
+  
+    // Important!
+    // Keep this list in sync with production version in `./factoryWithThrowingShims.js`.
+    var ReactPropTypes = {
+      array: createPrimitiveTypeChecker('array'),
+      bool: createPrimitiveTypeChecker('boolean'),
+      func: createPrimitiveTypeChecker('function'),
+      number: createPrimitiveTypeChecker('number'),
+      object: createPrimitiveTypeChecker('object'),
+      string: createPrimitiveTypeChecker('string'),
+      symbol: createPrimitiveTypeChecker('symbol'),
+  
+      any: createAnyTypeChecker(),
+      arrayOf: createArrayOfTypeChecker,
+      element: createElementTypeChecker(),
+      instanceOf: createInstanceTypeChecker,
+      node: createNodeChecker(),
+      objectOf: createObjectOfTypeChecker,
+      oneOf: createEnumTypeChecker,
+      oneOfType: createUnionTypeChecker,
+      shape: createShapeTypeChecker,
+      exact: createStrictShapeTypeChecker,
+    };
+  
+    /**
+     * inlined Object.is polyfill to avoid requiring consumers ship their own
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+     */
+    /*eslint-disable no-self-compare*/
+    function is(x, y) {
+      // SameValue algorithm
+      if (x === y) {
+        // Steps 1-5, 7-10
+        // Steps 6.b-6.e: +0 != -0
+        return x !== 0 || 1 / x === 1 / y;
+      } else {
+        // Step 6.a: NaN == NaN
+        return x !== x && y !== y;
+      }
+    }
+    /*eslint-enable no-self-compare*/
+  
+    /**
+     * We use an Error-like object for backward compatibility as people may call
+     * PropTypes directly and inspect their output. However, we don't use real
+     * Errors anymore. We don't inspect their stack anyway, and creating them
+     * is prohibitively expensive if they are created too often, such as what
+     * happens in oneOfType() for any type before the one that matched.
+     */
+    function PropTypeError(message) {
+      this.message = message;
+      this.stack = '';
+    }
+    // Make `instanceof Error` still work for returned errors.
+    PropTypeError.prototype = Error.prototype;
+  
+    function createChainableTypeChecker(validate) {
+      if (true) {
+        var manualPropTypeCallCache = {};
+        var manualPropTypeWarningCount = 0;
+      }
+      function checkType(isRequired, props, propName, componentName, location, propFullName, secret) {
+        componentName = componentName || ANONYMOUS;
+        propFullName = propFullName || propName;
+  
+        if (secret !== ReactPropTypesSecret) {
+          if (throwOnDirectAccess) {
+            // New behavior only for users of `prop-types` package
+            var err = new Error(
+              'Calling PropTypes validators directly is not supported by the `prop-types` package. ' +
+              'Use `PropTypes.checkPropTypes()` to call them. ' +
+              'Read more at http://fb.me/use-check-prop-types'
+            );
+            err.name = 'Invariant Violation';
+            throw err;
+          } else if ("development" !== 'production' && typeof console !== 'undefined') {
+            // Old behavior for people using React.PropTypes
+            var cacheKey = componentName + ':' + propName;
+            if (
+              !manualPropTypeCallCache[cacheKey] &&
+              // Avoid spamming the console because they are often not actionable except for lib authors
+              manualPropTypeWarningCount < 3
+            ) {
+              printWarning(
+                'You are manually calling a React.PropTypes validation ' +
+                'function for the `' + propFullName + '` prop on `' + componentName  + '`. This is deprecated ' +
+                'and will throw in the standalone `prop-types` package. ' +
+                'You may be seeing this warning due to a third-party PropTypes ' +
+                'library. See https://fb.me/react-warning-dont-call-proptypes ' + 'for details.'
+              );
+              manualPropTypeCallCache[cacheKey] = true;
+              manualPropTypeWarningCount++;
+            }
+          }
+        }
+        if (props[propName] == null) {
+          if (isRequired) {
+            if (props[propName] === null) {
+              return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required ' + ('in `' + componentName + '`, but its value is `null`.'));
+            }
+            return new PropTypeError('The ' + location + ' `' + propFullName + '` is marked as required in ' + ('`' + componentName + '`, but its value is `undefined`.'));
+          }
+          return null;
+        } else {
+          return validate(props, propName, componentName, location, propFullName);
+        }
+      }
+  
+      var chainedCheckType = checkType.bind(null, false);
+      chainedCheckType.isRequired = checkType.bind(null, true);
+  
+      return chainedCheckType;
+    }
+  
+    function createPrimitiveTypeChecker(expectedType) {
+      function validate(props, propName, componentName, location, propFullName, secret) {
+        var propValue = props[propName];
+        var propType = getPropType(propValue);
+        if (propType !== expectedType) {
+          // `propValue` being instance of, say, date/regexp, pass the 'object'
+          // check, but we can offer a more precise error message here rather than
+          // 'of type `object`'.
+          var preciseType = getPreciseType(propValue);
+  
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + preciseType + '` supplied to `' + componentName + '`, expected ') + ('`' + expectedType + '`.'));
+        }
+        return null;
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createAnyTypeChecker() {
+      return createChainableTypeChecker(emptyFunctionThatReturnsNull);
+    }
+  
+    function createArrayOfTypeChecker(typeChecker) {
+      function validate(props, propName, componentName, location, propFullName) {
+        if (typeof typeChecker !== 'function') {
+          return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside arrayOf.');
+        }
+        var propValue = props[propName];
+        if (!Array.isArray(propValue)) {
+          var propType = getPropType(propValue);
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an array.'));
+        }
+        for (var i = 0; i < propValue.length; i++) {
+          var error = typeChecker(propValue, i, componentName, location, propFullName + '[' + i + ']', ReactPropTypesSecret);
+          if (error instanceof Error) {
+            return error;
+          }
+        }
+        return null;
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createElementTypeChecker() {
+      function validate(props, propName, componentName, location, propFullName) {
+        var propValue = props[propName];
+        if (!isValidElement(propValue)) {
+          var propType = getPropType(propValue);
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected a single ReactElement.'));
+        }
+        return null;
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createInstanceTypeChecker(expectedClass) {
+      function validate(props, propName, componentName, location, propFullName) {
+        if (!(props[propName] instanceof expectedClass)) {
+          var expectedClassName = expectedClass.name || ANONYMOUS;
+          var actualClassName = getClassName(props[propName]);
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + actualClassName + '` supplied to `' + componentName + '`, expected ') + ('instance of `' + expectedClassName + '`.'));
+        }
+        return null;
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createEnumTypeChecker(expectedValues) {
+      if (!Array.isArray(expectedValues)) {
+         true ? printWarning('Invalid argument supplied to oneOf, expected an instance of array.') : undefined;
+        return emptyFunctionThatReturnsNull;
+      }
+  
+      function validate(props, propName, componentName, location, propFullName) {
+        var propValue = props[propName];
+        for (var i = 0; i < expectedValues.length; i++) {
+          if (is(propValue, expectedValues[i])) {
+            return null;
+          }
+        }
+  
+        var valuesString = JSON.stringify(expectedValues);
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of value `' + propValue + '` ' + ('supplied to `' + componentName + '`, expected one of ' + valuesString + '.'));
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createObjectOfTypeChecker(typeChecker) {
+      function validate(props, propName, componentName, location, propFullName) {
+        if (typeof typeChecker !== 'function') {
+          return new PropTypeError('Property `' + propFullName + '` of component `' + componentName + '` has invalid PropType notation inside objectOf.');
+        }
+        var propValue = props[propName];
+        var propType = getPropType(propValue);
+        if (propType !== 'object') {
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type ' + ('`' + propType + '` supplied to `' + componentName + '`, expected an object.'));
+        }
+        for (var key in propValue) {
+          if (propValue.hasOwnProperty(key)) {
+            var error = typeChecker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+            if (error instanceof Error) {
+              return error;
+            }
+          }
+        }
+        return null;
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createUnionTypeChecker(arrayOfTypeCheckers) {
+      if (!Array.isArray(arrayOfTypeCheckers)) {
+         true ? printWarning('Invalid argument supplied to oneOfType, expected an instance of array.') : undefined;
+        return emptyFunctionThatReturnsNull;
+      }
+  
+      for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
+        var checker = arrayOfTypeCheckers[i];
+        if (typeof checker !== 'function') {
+          printWarning(
+            'Invalid argument supplied to oneOfType. Expected an array of check functions, but ' +
+            'received ' + getPostfixForTypeWarning(checker) + ' at index ' + i + '.'
+          );
+          return emptyFunctionThatReturnsNull;
+        }
+      }
+  
+      function validate(props, propName, componentName, location, propFullName) {
+        for (var i = 0; i < arrayOfTypeCheckers.length; i++) {
+          var checker = arrayOfTypeCheckers[i];
+          if (checker(props, propName, componentName, location, propFullName, ReactPropTypesSecret) == null) {
+            return null;
+          }
+        }
+  
+        return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`.'));
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createNodeChecker() {
+      function validate(props, propName, componentName, location, propFullName) {
+        if (!isNode(props[propName])) {
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` supplied to ' + ('`' + componentName + '`, expected a ReactNode.'));
+        }
+        return null;
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createShapeTypeChecker(shapeTypes) {
+      function validate(props, propName, componentName, location, propFullName) {
+        var propValue = props[propName];
+        var propType = getPropType(propValue);
+        if (propType !== 'object') {
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+        }
+        for (var key in shapeTypes) {
+          var checker = shapeTypes[key];
+          if (!checker) {
+            continue;
+          }
+          var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+          if (error) {
+            return error;
+          }
+        }
+        return null;
+      }
+      return createChainableTypeChecker(validate);
+    }
+  
+    function createStrictShapeTypeChecker(shapeTypes) {
+      function validate(props, propName, componentName, location, propFullName) {
+        var propValue = props[propName];
+        var propType = getPropType(propValue);
+        if (propType !== 'object') {
+          return new PropTypeError('Invalid ' + location + ' `' + propFullName + '` of type `' + propType + '` ' + ('supplied to `' + componentName + '`, expected `object`.'));
+        }
+        // We need to check all keys in case some are required but missing from
+        // props.
+        var allKeys = assign({}, props[propName], shapeTypes);
+        for (var key in allKeys) {
+          var checker = shapeTypes[key];
+          if (!checker) {
+            return new PropTypeError(
+              'Invalid ' + location + ' `' + propFullName + '` key `' + key + '` supplied to `' + componentName + '`.' +
+              '\nBad object: ' + JSON.stringify(props[propName], null, '  ') +
+              '\nValid keys: ' +  JSON.stringify(Object.keys(shapeTypes), null, '  ')
+            );
+          }
+          var error = checker(propValue, key, componentName, location, propFullName + '.' + key, ReactPropTypesSecret);
+          if (error) {
+            return error;
+          }
+        }
+        return null;
+      }
+  
+      return createChainableTypeChecker(validate);
+    }
+  
+    function isNode(propValue) {
+      switch (typeof propValue) {
+        case 'number':
+        case 'string':
+        case 'undefined':
+          return true;
+        case 'boolean':
+          return !propValue;
+        case 'object':
+          if (Array.isArray(propValue)) {
+            return propValue.every(isNode);
+          }
+          if (propValue === null || isValidElement(propValue)) {
+            return true;
+          }
+  
+          var iteratorFn = getIteratorFn(propValue);
+          if (iteratorFn) {
+            var iterator = iteratorFn.call(propValue);
+            var step;
+            if (iteratorFn !== propValue.entries) {
+              while (!(step = iterator.next()).done) {
+                if (!isNode(step.value)) {
+                  return false;
+                }
+              }
+            } else {
+              // Iterator will provide entry [k,v] tuples rather than values.
+              while (!(step = iterator.next()).done) {
+                var entry = step.value;
+                if (entry) {
+                  if (!isNode(entry[1])) {
+                    return false;
+                  }
+                }
+              }
+            }
+          } else {
+            return false;
+          }
+  
+          return true;
+        default:
+          return false;
+      }
+    }
+  
+    function isSymbol(propType, propValue) {
+      // Native Symbol.
+      if (propType === 'symbol') {
+        return true;
+      }
+  
+      // 19.4.3.5 Symbol.prototype[@@toStringTag] === 'Symbol'
+      if (propValue['@@toStringTag'] === 'Symbol') {
+        return true;
+      }
+  
+      // Fallback for non-spec compliant Symbols which are polyfilled.
+      if (typeof Symbol === 'function' && propValue instanceof Symbol) {
+        return true;
+      }
+  
+      return false;
+    }
+  
+    // Equivalent of `typeof` but with special handling for array and regexp.
+    function getPropType(propValue) {
+      var propType = typeof propValue;
+      if (Array.isArray(propValue)) {
+        return 'array';
+      }
+      if (propValue instanceof RegExp) {
+        // Old webkits (at least until Android 4.0) return 'function' rather than
+        // 'object' for typeof a RegExp. We'll normalize this here so that /bla/
+        // passes PropTypes.object.
+        return 'object';
+      }
+      if (isSymbol(propType, propValue)) {
+        return 'symbol';
+      }
+      return propType;
+    }
+  
+    // This handles more types than `getPropType`. Only used for error messages.
+    // See `createPrimitiveTypeChecker`.
+    function getPreciseType(propValue) {
+      if (typeof propValue === 'undefined' || propValue === null) {
+        return '' + propValue;
+      }
+      var propType = getPropType(propValue);
+      if (propType === 'object') {
+        if (propValue instanceof Date) {
+          return 'date';
+        } else if (propValue instanceof RegExp) {
+          return 'regexp';
+        }
+      }
+      return propType;
+    }
+  
+    // Returns a string that is postfixed to a warning about an invalid type.
+    // For example, "undefined" or "of type array"
+    function getPostfixForTypeWarning(value) {
+      var type = getPreciseType(value);
+      switch (type) {
+        case 'array':
+        case 'object':
+          return 'an ' + type;
+        case 'boolean':
+        case 'date':
+        case 'regexp':
+          return 'a ' + type;
+        default:
+          return type;
+      }
+    }
+  
+    // Returns class name of the object, if any.
+    function getClassName(propValue) {
+      if (!propValue.constructor || !propValue.constructor.name) {
+        return ANONYMOUS;
+      }
+      return propValue.constructor.name;
+    }
+  
+    ReactPropTypes.checkPropTypes = checkPropTypes;
+    ReactPropTypes.PropTypes = ReactPropTypes;
+  
+    return ReactPropTypes;
+  };
+  
+  
+  /***/ }),
+  
+  /***/ "./node_modules/prop-types/index.js":
+  /*!******************************************!*\
+    !*** ./node_modules/prop-types/index.js ***!
+    \******************************************/
+  /*! no static exports found */
+  /***/ (function(module, exports, __webpack_require__) {
+  
+  /**
+   * Copyright (c) 2013-present, Facebook, Inc.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE file in the root directory of this source tree.
+   */
+  
+  if (true) {
+    var REACT_ELEMENT_TYPE = (typeof Symbol === 'function' &&
+      Symbol.for &&
+      Symbol.for('react.element')) ||
+      0xeac7;
+  
+    var isValidElement = function(object) {
+      return typeof object === 'object' &&
+        object !== null &&
+        object.$$typeof === REACT_ELEMENT_TYPE;
+    };
+  
+    // By explicitly using `prop-types` you are opting into new development behavior.
+    // http://fb.me/prop-types-in-prod
+    var throwOnDirectAccess = true;
+    module.exports = __webpack_require__(/*! ./factoryWithTypeCheckers */ "./node_modules/prop-types/factoryWithTypeCheckers.js")(isValidElement, throwOnDirectAccess);
+  } else {}
+  
+  
+  /***/ }),
+  
   /***/ "./node_modules/prop-types/lib/ReactPropTypesSecret.js":
   /*!*************************************************************!*\
     !*** ./node_modules/prop-types/lib/ReactPropTypesSecret.js ***!
@@ -29217,11 +29819,29 @@
   
   var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
   
-  var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-  
   var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
   
   var _react2 = _interopRequireDefault(_react);
+  
+  var _Header = __webpack_require__(/*! ./Header */ "./src/components/Header.jsx");
+  
+  var _Header2 = _interopRequireDefault(_Header);
+  
+  var _InputText = __webpack_require__(/*! ./InputText */ "./src/components/InputText.jsx");
+  
+  var _InputText2 = _interopRequireDefault(_InputText);
+  
+  var _PaymentCard = __webpack_require__(/*! ./PaymentCard */ "./src/components/PaymentCard.jsx");
+  
+  var _PaymentCard2 = _interopRequireDefault(_PaymentCard);
+  
+  var _Text = __webpack_require__(/*! ./Text */ "./src/components/Text.jsx");
+  
+  var _Text2 = _interopRequireDefault(_Text);
+  
+  var _strings = __webpack_require__(/*! ../strings */ "./src/strings/index.js");
+  
+  var _utils = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -29231,33 +29851,78 @@
   
   function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
   
-  var testObject = {
-    first: 'first text',
-    second: 'second',
-    lorem: 'lorem ipsum'
-  };
-  
-  var newObject = _extends({}, testObject, {
-    second: 'New App'
-  });
+  var response = __webpack_require__(/*! ../../static/sample_response.json */ "./static/sample_response.json");
   
   var App = function (_React$Component) {
     _inherits(App, _React$Component);
   
-    function App() {
+    function App(props) {
       _classCallCheck(this, App);
   
-      return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+      var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+  
+      _this.state = { payments: _this.generatePaymentCardData(response) };
+      return _this;
     }
   
     _createClass(App, [{
       key: 'render',
       value: function render() {
+        var payments = this.state.payments.payments;
+  
+  
         return _react2.default.createElement(
-          'div',
-          { id: 'app-container' },
-          newObject.second
+          _react2.default.Fragment,
+          null,
+          _react2.default.createElement(_Header2.default, {
+            className: '',
+            displayText: _strings.FlexPayEstimatorApp.Header
+          }),
+          _react2.default.createElement(_Text2.default, {
+            className: '',
+            displayText: _strings.FlexPayEstimatorApp.HeaderDescription
+          }),
+          _react2.default.createElement(_InputText2.default, {
+            autoFocus: true,
+            name: 'flex-pay-amount',
+            placeholder: '$20'
+          }),
+          _react2.default.createElement(_Text2.default, {
+            className: '',
+            displayText: _strings.FlexPayEstimatorApp.Input
+          }),
+          _react2.default.createElement(
+            'div',
+            null,
+            payments.map(function (payment) {
+              return _react2.default.createElement(_PaymentCard2.default, { paymentData: payment });
+            })
+          )
         );
+      }
+    }, {
+      key: 'generatePaymentCardData',
+      value: function generatePaymentCardData(response) {
+        var dataset = {
+          payments: [],
+          total_amount: response.total_amount
+        };
+        var count = 1;
+        dataset.total_amount = response.total_amount;
+  
+        response.payments.map(function (payment) {
+          return dataset.payments.push({
+            paymentAmount: '$' + payment.amount || "$0",
+            paymentDateText: 'on ' + (0, _utils.timeConverter)(payment.date) || "today",
+            paymentDescription: _strings.FlexPayEstimatorApp.FlexPay.Default,
+            paymentNumber: count++
+          });
+        });
+  
+        dataset.payments[0].paymentDateText = "today";
+        dataset.payments[0].paymentDescription = _strings.FlexPayEstimatorApp.FlexPay.FirstPayment;
+  
+        return dataset;
       }
     }]);
   
@@ -29265,6 +29930,293 @@
   }(_react2.default.Component);
   
   exports.default = App;
+  
+  /***/ }),
+  
+  /***/ "./src/components/Header.jsx":
+  /*!***********************************!*\
+    !*** ./src/components/Header.jsx ***!
+    \***********************************/
+  /*! no static exports found */
+  /***/ (function(module, exports, __webpack_require__) {
+  
+  "use strict";
+  
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+  
+  var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _utils = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+  
+  function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  
+  function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  
+  var Header = function (_React$Component) {
+    _inherits(Header, _React$Component);
+  
+    function Header() {
+      _classCallCheck(this, Header);
+  
+      return _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).apply(this, arguments));
+    }
+  
+    _createClass(Header, [{
+      key: 'render',
+      value: function render() {
+        var displayText = this.props.displayText;
+  
+  
+        return _react2.default.createElement(
+          'div',
+          { className: '' },
+          displayText
+        );
+      }
+    }]);
+  
+    return Header;
+  }(_react2.default.Component);
+  
+  exports.default = Header;
+  
+  
+  Header.propTypes = {
+    displayText: _utils.BlReactTypes.string.isRequired
+  };
+  
+  /***/ }),
+  
+  /***/ "./src/components/InputText.jsx":
+  /*!**************************************!*\
+    !*** ./src/components/InputText.jsx ***!
+    \**************************************/
+  /*! no static exports found */
+  /***/ (function(module, exports, __webpack_require__) {
+  
+  "use strict";
+  
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+  
+  var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _utils = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+  
+  function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  
+  function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  
+  var InputText = function (_React$Component) {
+    _inherits(InputText, _React$Component);
+  
+    function InputText() {
+      _classCallCheck(this, InputText);
+  
+      return _possibleConstructorReturn(this, (InputText.__proto__ || Object.getPrototypeOf(InputText)).apply(this, arguments));
+    }
+  
+    _createClass(InputText, [{
+      key: 'render',
+      value: function render() {
+        var _props = this.props,
+            _props$name = _props.name,
+            name = _props$name === undefined ? "" : _props$name,
+            _props$placeholder = _props.placeholder,
+            placeholder = _props$placeholder === undefined ? "" : _props$placeholder,
+            _props$autoFocus = _props.autoFocus,
+            autoFocus = _props$autoFocus === undefined ? false : _props$autoFocus;
+  
+  
+        return _react2.default.createElement('input', {
+          autoFocus: autoFocus,
+          name: name,
+          placeholder: placeholder,
+          type: 'text'
+        });
+      }
+    }]);
+  
+    return InputText;
+  }(_react2.default.Component);
+  
+  exports.default = InputText;
+  
+  
+  InputText.propTypes = {
+    autoFocus: _utils.BlReactTypes.bool,
+    name: _utils.BlReactTypes.string,
+    placeholder: _utils.BlReactTypes.string
+  };
+  
+  /***/ }),
+  
+  /***/ "./src/components/PaymentCard.jsx":
+  /*!****************************************!*\
+    !*** ./src/components/PaymentCard.jsx ***!
+    \****************************************/
+  /*! no static exports found */
+  /***/ (function(module, exports, __webpack_require__) {
+  
+  "use strict";
+  
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+  
+  var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _Text = __webpack_require__(/*! ./Text */ "./src/components/Text.jsx");
+  
+  var _Text2 = _interopRequireDefault(_Text);
+  
+  var _utils = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+  
+  var _strings = __webpack_require__(/*! ../strings */ "./src/strings/index.js");
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+  
+  function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  
+  function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  
+  var PaymentCard = function (_React$Component) {
+    _inherits(PaymentCard, _React$Component);
+  
+    function PaymentCard() {
+      _classCallCheck(this, PaymentCard);
+  
+      return _possibleConstructorReturn(this, (PaymentCard.__proto__ || Object.getPrototypeOf(PaymentCard)).apply(this, arguments));
+    }
+  
+    _createClass(PaymentCard, [{
+      key: 'render',
+      value: function render() {
+        var _props$paymentData = this.props.paymentData,
+            paymentAmount = _props$paymentData.paymentAmount,
+            paymentDateText = _props$paymentData.paymentDateText,
+            paymentDescription = _props$paymentData.paymentDescription,
+            paymentNumber = _props$paymentData.paymentNumber;
+  
+  
+        return _react2.default.createElement(
+          'div',
+          { className: '' },
+          _react2.default.createElement(
+            'svg',
+            { className: 'svgicon', viewBox: '0 0 50 50', 'aria-hidden': 'true' },
+            _react2.default.createElement('path', { d: 'M38 5.5H0v27h38V5.5zM35 29.5H3v-21h32V29.5z' }),
+            _react2.default.createElement('path', { d: 'M42.5 11.5L42.5 11.5c-0.8 0-1.5 0.7-1.5 1.5v22.5H7.5C6.7 35.5 6 36.2 6 37c0 0.8 0.7 1.5 1.5 1.5H44V13C44 12.2 43.3 11.5 42.5 11.5' }),
+            _react2.default.createElement('path', { d: 'M47 19v22.5H13.5c-0.8 0-1.5 0.7-1.5 1.5 0 0.8 0.7 1.5 1.5 1.5H50V19c0-0.8-0.7-1.5-1.5-1.5S47 18.2 47 19' }),
+            _react2.default.createElement('path', { d: 'M19.1 22.8c-1.5 0-2.8-0.6-3.7-1.2l-1.2 1.9c1 0.8 2.5 1.3 3.9 1.4v1.7h2.2v-1.7c1.9-0.4 3.4-1.5 3.4-3.6 0-2-1.6-2.9-3.7-3.2l-0.7-0.1c-1.4-0.2-2.4-0.5-2.4-1.3 0-0.9 0.9-1.4 2.2-1.4 1.3 0 2.4 0.4 3.3 1l1.1-1.9c-1.1-0.6-2.1-1-3.2-1.2v-1.6h-2.2v1.6c-2 0.3-3.5 1.5-3.5 3.6 0 2.1 1.5 3 3.5 3.3l0.7 0.1c1.6 0.3 2.4 0.6 2.4 1.4C21.3 22.3 20.4 22.8 19.1 22.8' })
+          ),
+          _react2.default.createElement(_Text2.default, { displayText: (0, _strings.convertNumberToString)(paymentNumber) + ' Payment' }),
+          _react2.default.createElement(_Text2.default, { displayText: 'Pay ' + paymentAmount + ' ' + paymentDateText }),
+          _react2.default.createElement(_Text2.default, { displayText: paymentDescription })
+        );
+      }
+    }]);
+  
+    return PaymentCard;
+  }(_react2.default.Component);
+  
+  exports.default = PaymentCard;
+  
+  
+  PaymentCard.propTypes = {};
+  
+  /***/ }),
+  
+  /***/ "./src/components/Text.jsx":
+  /*!*********************************!*\
+    !*** ./src/components/Text.jsx ***!
+    \*********************************/
+  /*! no static exports found */
+  /***/ (function(module, exports, __webpack_require__) {
+  
+  "use strict";
+  
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+  
+  var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _utils = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+  
+  function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  
+  function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  
+  var Text = function (_React$Component) {
+    _inherits(Text, _React$Component);
+  
+    function Text() {
+      _classCallCheck(this, Text);
+  
+      return _possibleConstructorReturn(this, (Text.__proto__ || Object.getPrototypeOf(Text)).apply(this, arguments));
+    }
+  
+    _createClass(Text, [{
+      key: 'render',
+      value: function render() {
+        var displayText = this.props.displayText;
+  
+  
+        return _react2.default.createElement(
+          'div',
+          { className: '' },
+          displayText
+        );
+      }
+    }]);
+  
+    return Text;
+  }(_react2.default.Component);
+  
+  exports.default = Text;
+  
+  
+  Text.propTypes = {
+    displayText: _utils.BlReactTypes.string.isRequired
+  };
   
   /***/ }),
   
@@ -29293,6 +30245,99 @@
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
   _reactDom2.default.render(_react2.default.createElement(_App2.default, null), document.getElementById('app'));
+  
+  /***/ }),
+  
+  /***/ "./src/strings/index.js":
+  /*!******************************!*\
+    !*** ./src/strings/index.js ***!
+    \******************************/
+  /*! no static exports found */
+  /***/ (function(module, exports, __webpack_require__) {
+  
+  "use strict";
+  
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var FlexPayEstimatorApp = exports.FlexPayEstimatorApp = {
+    FlexPay: {
+      Default: "We'll automatically charge the payment to your credit or debit card.",
+      FirstPayment: "Your first payment will also include any taxes, duties, and \
+        shipping costs."
+    },
+    Header: "Try it yourself",
+    HeaderDescription: "\n    Enter your purchase amount to see your estimated Flexible Payments.\n    Actual payments including taxes will be shown at checkout.\n  ",
+    Input: "Enter your purchase amount",
+    Question: "Can I change the number of payments?",
+    QuestionDescription: "\n    Our in-house customer service team is just a phone call, email,\n    or text away. If you have any questions about Flexible Payments,\n    just let us know.\n  "
+  
+    // convert 1 -> first; works till 99
+  };var convertNumberToString = exports.convertNumberToString = function convertNumberToString() {
+    var number = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  
+    var special = ["zeroth", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth", "eighteenth", "nineteenth"];
+    var deca = ["twent", "thirt", "fort", "fift", "sixt", "sevent", "eight", "ninet"];
+  
+    var stringifyNumber = function stringifyNumber(number) {
+      if (number < 20) return special[number];
+      if (number % 10 === 0) return deca[Math.floor(number / 10) - 2] + "ieth";
+  
+      return deca[Math.floor(number / 10) - 2] + "y-" + special[number % 10];
+    };
+  
+    return stringifyNumber(number);
+  };
+  
+  /***/ }),
+  
+  /***/ "./src/utils/index.js":
+  /*!****************************!*\
+    !*** ./src/utils/index.js ***!
+    \****************************/
+  /*! no static exports found */
+  /***/ (function(module, exports, __webpack_require__) {
+  
+  "use strict";
+  
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.timeConverter = exports.BlReactTypes = undefined;
+  
+  var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+  
+  var _propTypes2 = _interopRequireDefault(_propTypes);
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  var BlReactTypes = exports.BlReactTypes = {
+    bool: _propTypes2.default.bool,
+    string: _propTypes2.default.string
+  };
+  
+  var timeConverter = exports.timeConverter = function timeConverter(timestamp) {
+    var ts = new Date(timestamp);
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var year = ts.getFullYear();
+    var month = months[ts.getMonth()];
+    var date = ts.getDate();
+  
+    return month + ' ' + date + ', ' + year;
+  };
+  
+  /***/ }),
+  
+  /***/ "./static/sample_response.json":
+  /*!*************************************!*\
+    !*** ./static/sample_response.json ***!
+    \*************************************/
+  /*! exports provided: payments, total_amount, default */
+  /***/ (function(module) {
+  
+  module.exports = {"payments":[{"amount":"33.34","date":"2018-07-18 14:02:48.297737-07:00"},{"amount":"33.33","date":"2018-08-18 14:02:48.297737-07:00"},{"amount":"33.33","date":"2018-09-18 14:02:48.297737-07:00"}],"total_amount":100};
   
   /***/ }),
   
