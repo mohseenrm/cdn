@@ -32457,8 +32457,8 @@
   
   
         return _react2.default.createElement(
-          _react2.default.Fragment,
-          null,
+          'div',
+          { className: 'app_wrapper txt_c' },
           _react2.default.createElement(_Header2.default, {
             className: '',
             displayText: _strings.FlexPayEstimatorApp.Header
