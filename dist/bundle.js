@@ -32483,7 +32483,7 @@
           }),
           _react2.default.createElement(
             'div',
-            null,
+            { className: 'flex' },
             payments.map(function (payment) {
               return _react2.default.createElement(_PaymentCard2.default, { paymentData: payment });
             })
@@ -32577,8 +32577,8 @@
   
   
         return _react2.default.createElement(
-          'div',
-          { className: '' },
+          'h2',
+          { className: 'wow_title' },
           displayText
         );
       }
@@ -32747,8 +32747,23 @@
             _react2.default.createElement('rect', { x: '7', y: '18', width: '36', height: '3' }),
             _react2.default.createElement('path', { d: 'M26.3 33.2l-0.8-0.1c-1.7-0.3-2.8-0.6-2.8-1.6 0-1 1.1-1.7 2.6-1.7 1.5 0 2.8 0.5 3.9 1.2l1.3-2.2c-1.3-0.8-2.5-1.2-3.9-1.4v-1.9H24v1.9c-2.3 0.4-4.2 1.8-4.2 4.3 0 2.5 1.8 3.6 4.2 3.9l0.9 0.1c1.9 0.3 2.9 0.7 2.9 1.6 0 1.1-1.2 1.7-2.7 1.7 -1.8 0-3.4-0.7-4.4-1.5l-1.4 2.2c1.2 1 3 1.5 4.7 1.7v2h2.7v-2.1c2.3-0.4 4-1.8 4-4.3C30.7 34.7 28.8 33.6 26.3 33.2' })
           ),
-          _react2.default.createElement(_Text2.default, { displayText: (0, _strings.convertNumberToString)(paymentNumber) + ' Payment' }),
-          _react2.default.createElement(_Text2.default, { displayText: 'Pay ' + paymentAmount + ' ' + paymentDateText }),
+          _react2.default.createElement(
+            'h5',
+            null,
+            (0, _strings.convertNumberToString)(paymentNumber) + ' Payment'
+          ),
+          _react2.default.createElement(
+            'h3',
+            null,
+            'Pay ',
+            _react2.default.createElement(
+              'b',
+              null,
+              '' + paymentAmount
+            ),
+            ' ',
+            '' + paymentDateText
+          ),
           _react2.default.createElement(_Text2.default, { displayText: paymentDescription })
         );
       }
