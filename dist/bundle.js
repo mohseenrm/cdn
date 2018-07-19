@@ -32468,7 +32468,7 @@
             displayText: _strings.FlexPayEstimatorApp.Header
           }),
           _react2.default.createElement(_Text2.default, {
-            className: '',
+            className: 'txt_c',
             displayText: _strings.FlexPayEstimatorApp.HeaderDescription
           }),
           _react2.default.createElement(_InputText2.default, {
@@ -32495,6 +32495,16 @@
               href: '#'
             },
             _strings.FlexPayEstimatorApp.Question
+          ),
+          _react2.default.createElement(
+            'h3',
+            null,
+            _strings.FlexPayEstimatorApp.SupportHeader
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            _strings.FlexPayEstimatorApp.SupportDescription
           )
         );
       }
@@ -32895,8 +32905,8 @@
     HeaderDescription: "\n    Enter your purchase amount to see your estimated Flexible Payments.\n    Actual payments including taxes will be shown at checkout.\n  ",
     Input: "Enter your purchase amount",
     Question: "Can I change the number of payments?",
-    QuestionHeader: "We're here for you",
-    QuestionDescription: "\n    Our in-house customer service team is just a phone call, email,\n    or text away. If you have any questions about Flexible Payments,\n    just let us know.\n  "
+    SupportHeader: "We're here for you",
+    SupportDescription: "\n    Our in-house customer service team is just a phone call, email,\n    or text away. If you have any questions about Flexible Payments,\n    just let us know.\n  "
   
     // convert 1 -> first; works till 99
   };var convertNumberToString = exports.convertNumberToString = function convertNumberToString() {
