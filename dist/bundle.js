@@ -32384,10 +32384,6 @@
   
   var _PaymentCard2 = _interopRequireDefault(_PaymentCard);
   
-  var _Text = __webpack_require__(/*! ./Text */ "./src/components/Text.jsx");
-  
-  var _Text2 = _interopRequireDefault(_Text);
-  
   var _strings = __webpack_require__(/*! ../strings */ "./src/strings/index.js");
   
   var _utils = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
@@ -32467,20 +32463,22 @@
             className: '',
             displayText: _strings.FlexPayEstimatorApp.Header
           }),
-          _react2.default.createElement(_Text2.default, {
-            className: 'txt_c',
-            displayText: _strings.FlexPayEstimatorApp.HeaderDescription
-          }),
+          _react2.default.createElement(
+            'div',
+            { className: 'txt_c' },
+            _strings.FlexPayEstimatorApp.HeaderDescription
+          ),
           _react2.default.createElement(_InputText2.default, {
             autoFocus: true,
             callbackParent: this.amountChanged,
             name: 'flex-pay-amount',
             placeholder: '$120'
           }),
-          _react2.default.createElement(_Text2.default, {
-            className: '',
-            displayText: _strings.FlexPayEstimatorApp.Input
-          }),
+          _react2.default.createElement(
+            'div',
+            { className: 'txt_c' },
+            _strings.FlexPayEstimatorApp.Input
+          ),
           _react2.default.createElement(
             'div',
             { className: 'flex' },
@@ -32749,7 +32747,7 @@
   
         return _react2.default.createElement(
           'div',
-          { className: 'txt_c' },
+          { className: 'txt_c payment_card_wrapper' },
           _react2.default.createElement(
             'svg',
             { className: 'svgicon ${style}', viewBox: '0 0 50 50', 'aria-hidden': 'true' },
@@ -32902,11 +32900,11 @@
         shipping costs."
     },
     Header: "Try it yourself",
-    HeaderDescription: "\n    Enter your purchase amount to see your estimated Flexible Payments.\n    Actual payments including taxes will be shown at checkout.\n  ",
+    HeaderDescription: "Enter your purchase amount to see your estimated Flexible Payments. Actual payments including taxes will be shown at checkout.",
     Input: "Enter your purchase amount",
     Question: "Can I change the number of payments?",
     SupportHeader: "We're here for you",
-    SupportDescription: "\n    Our in-house customer service team is just a phone call, email,\n    or text away. If you have any questions about Flexible Payments,\n    just let us know.\n  "
+    SupportDescription: "Our in-house customer service team is just a phone call, email, or text away. If you have any questions about Flexible Payments, just let us know."
   
     // convert 1 -> first; works till 99
   };var convertNumberToString = exports.convertNumberToString = function convertNumberToString() {
