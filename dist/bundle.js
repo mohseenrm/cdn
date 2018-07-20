@@ -32522,6 +32522,8 @@
         var count = 1;
         dataset.total_amount = response.total_amount;
   
+        console.log('[DEBUG]: ', response);
+        console.log('[DEBUG]: ', typeof response === 'undefined' ? 'undefined' : _typeof(response));
         console.log('[DEBUG]: ', response.payments);
         //test
         console.log('[DEBUG]: ', _typeof(response.payments));
