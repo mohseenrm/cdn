@@ -32430,6 +32430,7 @@ var App = function (_React$Component) {
         console.log('[RESPONSE]: ', response.data);
         console.log('[DEBUG]: ', _this2.generatePaymentCardData(response.data));
 
+        console.log('TEST');
         _this2.setState(_extends({}, _this2.state, {
           payments: _this2.generatePaymentCardData(response.data)
         }));
