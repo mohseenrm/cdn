@@ -32586,7 +32586,7 @@
   
         return _react2.default.createElement(
           'h2',
-          { className: 'wow_title' },
+          { className: 'wow_title txt_c' },
           displayText
         );
       }
