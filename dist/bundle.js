@@ -32374,6 +32374,8 @@
   
   var _react2 = _interopRequireDefault(_react);
   
+  var _util = __webpack_require__(/*! util */ "./node_modules/util/util.js");
+  
   var _Header = __webpack_require__(/*! ./Header */ "./src/components/Header.jsx");
   
   var _Header2 = _interopRequireDefault(_Header);
@@ -32389,8 +32391,6 @@
   var _strings = __webpack_require__(/*! ../strings */ "./src/strings/index.js");
   
   var _utils = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
-  
-  var _util = __webpack_require__(/*! util */ "./node_modules/util/util.js");
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -32434,10 +32434,10 @@
           console.log('[RESPONSE]: ', response.data);
   
           // ideally shouldn't have to do this
-          var responseParsed = JSON.parse(response);
+          var responseParsed = (0, _utils.parseJson)(response);
   
           _this2.setState(_extends({}, _this2.state, {
-            payments: _this2.generatePaymentCardData(responseParsed.data)
+            payments: _this2.generatePaymentCardData((0, _utils.parseJson)(responseParsed.data))
           }));
         }).catch(function (error) {
           return console.log('ERROR: ', error);
@@ -32954,7 +32954,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.timeConverter = exports.BlReactTypes = undefined;
+  exports.parseJson = exports.timeConverter = exports.BlReactTypes = undefined;
   
   var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
   
@@ -32975,6 +32975,10 @@
     var date = ts.getDate();
   
     return month + ' ' + date + ', ' + year;
+  };
+  
+  var parseJson = exports.parseJson = function parseJson(jsonString) {
+    return JSON.parse(jsonString);
   };
   
   /***/ }),
