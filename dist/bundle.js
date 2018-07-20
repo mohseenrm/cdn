@@ -32433,8 +32433,11 @@
           console.log('[DEBUG]: ', _this2.generatePaymentCardData(response.data));
           console.log('[RESPONSE]: ', response.data);
   
+          // ideally shouldn't have to do this
+          var responseParsed = JSON.parse(response);
+  
           _this2.setState(_extends({}, _this2.state, {
-            payments: _this2.generatePaymentCardData(response.data)
+            payments: _this2.generatePaymentCardData(responseParsed.data)
           }));
         }).catch(function (error) {
           return console.log('ERROR: ', error);
