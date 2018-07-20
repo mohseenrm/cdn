@@ -32447,7 +32447,7 @@
   
           var data = localStorage.getItem(url);
   
-          // return this.fetchPaymentData(url)
+          return this.fetchPaymentData(url);
         }
       }
     }, {
