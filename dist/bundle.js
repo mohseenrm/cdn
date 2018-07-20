@@ -32429,10 +32429,10 @@
         var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "http://localhost:50777/rest/flex-pay-estimator/12000";
   
         return _axios2.default.get(url, { headers: { "Content-Type": "application/json" } }).then(function (response) {
+          console.log('[DEBUG]: ', response);
           console.log('[DEBUG]: ', _this2.generatePaymentCardData(response.data));
           console.log('[RESPONSE]: ', response.data);
   
-          console.log('TEST ', _this2);
           _this2.setState(_extends({}, _this2.state, {
             payments: _this2.generatePaymentCardData(response.data)
           }));
