@@ -32523,6 +32523,7 @@
         dataset.total_amount = response.total_amount;
   
         console.log('[DEBUG]: ', response.payments);
+        //test
         console.log('[DEBUG]: ', _typeof(response.payments));
   
         response.payments.map(function (payment) {
