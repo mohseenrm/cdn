@@ -32428,11 +32428,10 @@
         var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "http://localhost:50777/rest/flex-pay-estimator/12000";
   
         return _axios2.default.get(url, {
-          headers: { "Content-Type": "application/json" },
-          transformResponse: _axios2.default.defaults.transformResponse.concat(function (data) {
-            return data.request.responseText;
-          })
+          headers: { "Content-Type": "application/json" }
         }).then(function (response) {
+          console.log('[RESPONSE]: ', response);
+          console.log('[RESPONSE]: ', typeof response === 'undefined' ? 'undefined' : _typeof(response));
           var r = JSON.parse(response);
           console.log('[RESPONSE]: ', r);
           console.log('[RESPONSE]: ', typeof r === 'undefined' ? 'undefined' : _typeof(r));
