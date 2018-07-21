@@ -32432,10 +32432,10 @@
         }).then(function (response) {
           console.log('[RESPONSE]: ', response);
           console.log('[RESPONSE]: ', typeof response === 'undefined' ? 'undefined' : _typeof(response));
-          var r = JSON.parse(response);
-          console.log('[RESPONSE]: ', r);
-          console.log('[RESPONSE]: ', typeof r === 'undefined' ? 'undefined' : _typeof(r));
-          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(r));
+          // const r = JSON.parse(response)
+  
+  
+          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(response.data));
   
           // ideally shouldn't have to do this
           // const responseParsed = parseJson(response)
