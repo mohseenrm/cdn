@@ -32359,9 +32359,9 @@
     value: true
   });
   
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-  
   var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+  
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
   
   var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
   
@@ -32432,10 +32432,12 @@
           transformResponse: _axios2.default.defaults.transformResponse.concat(function (data) {
             return console.log('TEST: ', data);
           })
-        }).then(function (response) {
-          console.log('[RESPONSE]: ', response);
-          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(response.data));
-          console.log('[RESPONSE]: ', response.data);
+        }).then(function (_ref) {
+          var data = _ref.data;
+  
+          console.log('[RESPONSE]: ', data);
+          console.log('[RESPONSE]: ', typeof data === 'undefined' ? 'undefined' : _typeof(data));
+          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(data));
   
           // ideally shouldn't have to do this
           var responseParsed = (0, _utils.parseJson)(response);
