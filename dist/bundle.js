@@ -32428,9 +32428,14 @@
   
         var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "http://localhost:50777/rest/flex-pay-estimator/12000";
   
-        return _axios2.default.get(url, { headers: { "Content-Type": "application/json" } }).then(function (response) {
-          console.log('[DEBUG]: ', response);
-          console.log('[DEBUG]: ', _this2.generatePaymentCardData(response.data));
+        return _axios2.default.get(url, {
+          headers: { "Content-Type": "application/json" },
+          transformResponse: _axios2.default.defaults.transformResponse.concat(function (data) {
+            return console.log('TEST: ', data);
+          })
+        }).then(function (response) {
+          console.log('[RESPONSE]: ', response);
+          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(response.data));
           console.log('[RESPONSE]: ', response.data);
   
           // ideally shouldn't have to do this
