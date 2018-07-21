@@ -319,7 +319,8 @@
       // For IE 8/9 CORS support
       // Only supports POST and GET calls and doesn't returns the response headers.
       // DON'T do this for testing b/c XMLHttpRequest is mocked, not XDomainRequest.
-      if ("development" !== 'test' &&
+      if (!window.XMLHttpRequest &&
+          "development" !== 'test' &&
           typeof window !== 'undefined' &&
           window.XDomainRequest && !('withCredentials' in request) &&
           !isURLSameOrigin(config.url)) {
@@ -700,7 +701,7 @@
       }, arguments[1]);
     }
   
-    config = utils.merge(defaults, {method: 'get'}, this.defaults, config);
+    config = utils.merge(defaults, this.defaults, { method: 'get' }, config);
     config.method = config.method.toLowerCase();
   
     // Hook up interceptors middleware
@@ -1117,10 +1118,6 @@
       return data;
     }],
   
-    /**
-     * A timeout in milliseconds to abort a request. If set to 0 (default) a
-     * timeout is not created.
-     */
     timeout: 0,
   
     xsrfCookieName: 'XSRF-TOKEN',
@@ -1275,7 +1272,9 @@
   
         if (utils.isArray(val)) {
           key = key + '[]';
-        } else {
+        }
+  
+        if (!utils.isArray(val)) {
           val = [val];
         }
   
@@ -1844,7 +1843,7 @@
     }
   
     // Force an array if not already something iterable
-    if (typeof obj !== 'object') {
+    if (typeof obj !== 'object' && !isArray(obj)) {
       /*eslint no-param-reassign:0*/
       obj = [obj];
     }
