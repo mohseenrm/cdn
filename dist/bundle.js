@@ -32530,14 +32530,14 @@
         var count = 1;
         dataset.total_amount = response.total_amount;
   
-        var parsedResponse = (0, _utils.parseJson)(response);
+        // const parsedResponse = parseJson(response)
   
-        console.log('[DEBUG]: ', parsedResponse);
-        console.log('[DEBUG]: ', typeof parsedResponse === 'undefined' ? 'undefined' : _typeof(parsedResponse));
-        console.log('[DEBUG]: ', parsedResponse.payments);
-        console.log('[DEBUG]: ', _typeof(parsedResponse.payments));
+        console.log('[DEBUG]: ', response);
+        console.log('[DEBUG]: ', typeof response === 'undefined' ? 'undefined' : _typeof(response));
+        console.log('[DEBUG]: ', response.payments);
+        console.log('[DEBUG]: ', _typeof(response.payments));
   
-        parsedResponse.payments.map(function (payment) {
+        response.payments.map(function (payment) {
           return dataset.payments.push({
             paymentAmount: '$' + payment.amount || "$0",
             paymentDateText: 'on ' + (0, _utils.timeConverter)(payment.date) || "today",
