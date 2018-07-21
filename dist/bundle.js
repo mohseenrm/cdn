@@ -32430,18 +32430,19 @@
         return _axios2.default.get(url, {
           headers: { "Content-Type": "application/json" },
           transformResponse: _axios2.default.defaults.transformResponse.concat(function (data) {
-            return console.log(data);
+            return data.request.responseText;
           })
         }).then(function (response) {
-          console.log('[RESPONSE]: ', response);
-          console.log('[RESPONSE]: ', typeof response === 'undefined' ? 'undefined' : _typeof(response));
-          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(response));
+          var r = JSON.parse(response);
+          console.log('[RESPONSE]: ', r);
+          console.log('[RESPONSE]: ', typeof r === 'undefined' ? 'undefined' : _typeof(r));
+          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(r));
   
           // ideally shouldn't have to do this
           // const responseParsed = parseJson(response)
   
           _this2.setState(_extends({}, _this2.state, {
-            payments: _this2.generatePaymentCardData((0, _utils.parseJson)(responseParsed.data))
+            payments: _this2.generatePaymentCardData((0, _utils.parseJson)(r.data))
           }));
         }).catch(function (error) {
           return console.log('ERROR: ', error);
