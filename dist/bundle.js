@@ -32430,7 +32430,7 @@
         return _axios2.default.get(url, {
           headers: { "Content-Type": "application/json" },
           transformResponse: _axios2.default.defaults.transformResponse.concat(function (data) {
-            return JSON.parse(data);
+            return console.log(data);
           })
         }).then(function (response) {
           console.log('[RESPONSE]: ', response);
