@@ -32441,7 +32441,7 @@
           // const responseParsed = parseJson(response)
   
           _this2.setState(_extends({}, _this2.state, {
-            payments: _this2.generatePaymentCardData((0, _utils.parseJson)(r.data))
+            payments: _this2.generatePaymentCardData(response.data)
           }));
         }).catch(function (error) {
           return console.log('ERROR: ', error);
