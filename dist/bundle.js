@@ -32432,12 +32432,10 @@
           transformResponse: _axios2.default.defaults.transformResponse.concat(function (data) {
             return console.log('TEST: ', JSON.parse(data));
           })
-        }).then(function (_ref) {
-          var data = _ref.data;
-  
-          console.log('[RESPONSE]: ', data);
-          console.log('[RESPONSE]: ', typeof data === 'undefined' ? 'undefined' : _typeof(data));
-          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(data));
+        }).then(function (response) {
+          console.log('[RESPONSE]: ', response);
+          console.log('[RESPONSE]: ', typeof response === 'undefined' ? 'undefined' : _typeof(response));
+          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(response));
   
           // ideally shouldn't have to do this
           var responseParsed = (0, _utils.parseJson)(response);
