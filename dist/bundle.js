@@ -32457,8 +32457,6 @@
         var payments = this.state.payments.payments;
   
   
-        console.log('TEST');
-  
         return _react2.default.createElement(
           'div',
           { className: 'app_wrapper txt_c' },
