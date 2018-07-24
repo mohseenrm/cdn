@@ -32504,8 +32504,8 @@
             _strings.FlexPayEstimatorApp.Question
           ),
           _react2.default.createElement(
-            'h3',
-            null,
+            'h2',
+            { className: 'wow_title' },
             _strings.FlexPayEstimatorApp.SupportHeader
           ),
           _react2.default.createElement(
