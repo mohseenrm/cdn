@@ -32959,7 +32959,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.timeConverter = exports.BlReactTypes = undefined;
+  exports.capitalizeFirstLetter = exports.timeConverter = exports.BlReactTypes = undefined;
   
   var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
   
@@ -32982,7 +32982,7 @@
     return month + ' ' + date + ', ' + year;
   };
   
-  var capitalizeFirstLetter = function capitalizeFirstLetter(string) {
+  var capitalizeFirstLetter = exports.capitalizeFirstLetter = function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
   
