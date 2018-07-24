@@ -32430,6 +32430,7 @@
         }).then(function (response) {
           var paymentData = _this2.generatePaymentCardData(response.data);
   
+          // cache results for better performance
           localStorage.setItem(url, JSON.stringify(paymentData));
   
           _this2.setState(_extends({}, _this2.state, {
@@ -32442,22 +32443,18 @@
     }, {
       key: 'amountChanged',
       value: function amountChanged(amountInDollars) {
-        console.log('in App: ', amountInDollars);
         var amountInCents = parseFloat(amountInDollars).toFixed(2) * 100;
         var cipherId = amountInCents.toString();
   
         if (!isNaN(cipherId) && !(0, _util.isNullOrUndefined)(cipherId)) {
-          console.log('converted: ', cipherId);
           var url = 'http://localhost:50777/rest/flex-pay-estimator/' + cipherId;
   
           var data = localStorage.getItem(url);
   
+          // use cached results if available
           if (data) {
-            console.log('Using cached results');
-            var paymentData = JSON.parse(data);
-  
             return this.setState(_extends({}, this.state, {
-              payments: paymentData
+              payments: JSON.parse(data)
             }));
           }
   
@@ -32547,7 +32544,6 @@
           });
         });
   
-        //test
         dataset.payments[0].paymentDateText = "today";
         dataset.payments[0].paymentDescription = _strings.FlexPayEstimatorApp.FlexPay.FirstPayment;
   
