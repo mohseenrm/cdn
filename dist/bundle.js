@@ -32361,8 +32361,6 @@
   
   var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
   
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-  
   var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
   
   var _axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
@@ -32430,16 +32428,6 @@
         return _axios2.default.get(url, {
           headers: { "Content-Type": "application/json" }
         }).then(function (response) {
-          console.log('[RESPONSE]: ', response);
-          console.log('[RESPONSE]: ', typeof response === 'undefined' ? 'undefined' : _typeof(response));
-          // const r = JSON.parse(response)
-  
-  
-          console.log('[RESPONSE]: ', _this2.generatePaymentCardData(response.data));
-  
-          // ideally shouldn't have to do this
-          // const responseParsed = parseJson(response)
-  
           _this2.setState(_extends({}, _this2.state, {
             payments: _this2.generatePaymentCardData(response.data)
           }));
@@ -32478,19 +32466,24 @@
           }),
           _react2.default.createElement(
             'div',
-            { className: 'txt_c' },
+            { className: 'app_wrapper__text txt_c' },
             _strings.FlexPayEstimatorApp.HeaderDescription
           ),
-          _react2.default.createElement(_InputText2.default, {
-            autoFocus: true,
-            callbackParent: this.amountChanged,
-            name: 'flex-pay-amount',
-            placeholder: '$120'
-          }),
           _react2.default.createElement(
             'div',
-            { className: 'txt_c' },
-            _strings.FlexPayEstimatorApp.Input
+            { className: 'app_wrapper__amount_container' },
+            _react2.default.createElement(_InputText2.default, {
+              autoFocus: true,
+              callbackParent: this.amountChanged,
+              className: 'app_wrapper__amount_container__input',
+              name: 'flex-pay-amount',
+              placeholder: '$120'
+            }),
+            _react2.default.createElement(
+              'div',
+              { className: 'txt_c' },
+              _strings.FlexPayEstimatorApp.Input
+            )
           ),
           _react2.default.createElement(
             'div',
@@ -32528,13 +32521,6 @@
         };
         var count = 1;
         dataset.total_amount = response.total_amount;
-  
-        // const parsedResponse = parseJson(response)
-  
-        console.log('[DEBUG]: ', response);
-        console.log('[DEBUG]: ', typeof response === 'undefined' ? 'undefined' : _typeof(response));
-        console.log('[DEBUG]: ', response.payments);
-        console.log('[DEBUG]: ', _typeof(response.payments));
   
         response.payments.map(function (payment) {
           return dataset.payments.push({
@@ -32959,7 +32945,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.parseJson = exports.timeConverter = exports.BlReactTypes = undefined;
+  exports.timeConverter = exports.BlReactTypes = undefined;
   
   var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
   
@@ -32980,10 +32966,6 @@
     var date = ts.getDate();
   
     return month + ' ' + date + ', ' + year;
-  };
-  
-  var parseJson = exports.parseJson = function parseJson(jsonString) {
-    return JSON.parse(jsonString);
   };
   
   /***/ }),
