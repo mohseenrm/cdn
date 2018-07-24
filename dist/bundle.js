@@ -32665,16 +32665,19 @@
       key: 'render',
       value: function render() {
         var _props = this.props,
+            _props$autoFocus = _props.autoFocus,
+            autoFocus = _props$autoFocus === undefined ? false : _props$autoFocus,
+            _props$className = _props.className,
+            className = _props$className === undefined ? "" : _props$className,
             _props$name = _props.name,
             name = _props$name === undefined ? "" : _props$name,
             _props$placeholder = _props.placeholder,
-            placeholder = _props$placeholder === undefined ? "" : _props$placeholder,
-            _props$autoFocus = _props.autoFocus,
-            autoFocus = _props$autoFocus === undefined ? false : _props$autoFocus;
+            placeholder = _props$placeholder === undefined ? "" : _props$placeholder;
   
   
         return _react2.default.createElement('input', {
           autoFocus: autoFocus,
+          className: className,
           name: name,
           onChange: this.onChangeHandler,
           placeholder: placeholder,
