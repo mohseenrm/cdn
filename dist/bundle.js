@@ -32489,7 +32489,11 @@
             'div',
             { className: 'flex' },
             payments.map(function (payment, i) {
-              return _react2.default.createElement(_PaymentCard2.default, { key: i, paymentData: payment });
+              return _react2.default.createElement(_PaymentCard2.default, {
+                iconSize: 60,
+                key: i,
+                paymentData: payment
+              });
             })
           ),
           _react2.default.createElement(
@@ -32749,6 +32753,8 @@
       key: 'render',
       value: function render() {
         var _props$paymentData = this.props.paymentData,
+            _props$paymentData$ic = _props$paymentData.iconSize,
+            iconSize = _props$paymentData$ic === undefined ? 60 : _props$paymentData$ic,
             paymentAmount = _props$paymentData.paymentAmount,
             paymentDateText = _props$paymentData.paymentDateText,
             paymentDescription = _props$paymentData.paymentDescription,
@@ -32760,7 +32766,13 @@
           { className: 'txt_c payment_card_wrapper' },
           _react2.default.createElement(
             'svg',
-            { className: 'svgicon ${style}', viewBox: '0 0 50 50', 'aria-hidden': 'true' },
+            {
+              'aria-hidden': 'true',
+              className: 'svgicon',
+              height: iconSize,
+              width: iconSize,
+              viewBox: '0 0 50 50'
+            },
             _react2.default.createElement('path', { d: 'M38 6V1.5C38 0.7 37.3 0 36.5 0S35 0.7 35 1.5V6H15V1.5C15 0.7 14.3 0 13.5 0S12 0.7 12 1.5V6H1v44h48V6H38zM46 47H4V9h8v4.2c0 0.8 0.7 1.5 1.5 1.5s1.5-0.7 1.5-1.5V9h20v4.2c0 0.8 0.7 1.5 1.5 1.5s1.5-0.7 1.5-1.5V9h8V47z' }),
             _react2.default.createElement('rect', { x: '7', y: '18', width: '36', height: '3' }),
             _react2.default.createElement('path', { d: 'M26.3 33.2l-0.8-0.1c-1.7-0.3-2.8-0.6-2.8-1.6 0-1 1.1-1.7 2.6-1.7 1.5 0 2.8 0.5 3.9 1.2l1.3-2.2c-1.3-0.8-2.5-1.2-3.9-1.4v-1.9H24v1.9c-2.3 0.4-4.2 1.8-4.2 4.3 0 2.5 1.8 3.6 4.2 3.9l0.9 0.1c1.9 0.3 2.9 0.7 2.9 1.6 0 1.1-1.2 1.7-2.7 1.7 -1.8 0-3.4-0.7-4.4-1.5l-1.4 2.2c1.2 1 3 1.5 4.7 1.7v2h2.7v-2.1c2.3-0.4 4-1.8 4-4.3C30.7 34.7 28.8 33.6 26.3 33.2' })
