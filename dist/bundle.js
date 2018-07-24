@@ -32490,7 +32490,7 @@
             { className: 'flex' },
             payments.map(function (payment, i) {
               return _react2.default.createElement(_PaymentCard2.default, {
-                iconSize: 60,
+                iconSize: '60',
                 key: i,
                 paymentData: payment
               });
@@ -32754,7 +32754,7 @@
       value: function render() {
         var _props$paymentData = this.props.paymentData,
             _props$paymentData$ic = _props$paymentData.iconSize,
-            iconSize = _props$paymentData$ic === undefined ? 60 : _props$paymentData$ic,
+            iconSize = _props$paymentData$ic === undefined ? "60" : _props$paymentData$ic,
             paymentAmount = _props$paymentData.paymentAmount,
             paymentDateText = _props$paymentData.paymentDateText,
             paymentDescription = _props$paymentData.paymentDescription,
