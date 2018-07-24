@@ -32758,6 +32758,8 @@
             paymentNumber = _props$paymentData.paymentNumber;
   
   
+        console.log('TEST');
+  
         return _react2.default.createElement(
           'div',
           { className: 'txt_c payment_card_wrapper' },
