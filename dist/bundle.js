@@ -32758,8 +32758,6 @@
             paymentNumber = _props$paymentData.paymentNumber;
   
   
-        console.log('TEST');
-  
         return _react2.default.createElement(
           'div',
           { className: 'txt_c payment_card_wrapper' },
@@ -32776,7 +32774,7 @@
           ),
           _react2.default.createElement(
             'span',
-            null,
+            { className: 'fwb' },
             (0, _strings.convertNumberToString)(paymentNumber) + ' Payment'
           ),
           _react2.default.createElement(
@@ -32912,6 +32910,10 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
+  exports.convertNumberToString = exports.FlexPayEstimatorApp = undefined;
+  
+  var _utils = __webpack_require__(/*! ../utils */ "./src/utils/index.js");
+  
   var FlexPayEstimatorApp = exports.FlexPayEstimatorApp = {
     FlexPay: {
       Default: "We'll automatically charge the payment to your credit or debit card.",
@@ -32939,7 +32941,7 @@
       return deca[Math.floor(number / 10) - 2] + "y-" + special[number % 10];
     };
   
-    return stringifyNumber(number);
+    return (0, _utils.capitalizeFirstLetter)(stringifyNumber(number));
   };
   
   /***/ }),
@@ -32978,6 +32980,10 @@
     var date = ts.getDate();
   
     return month + ' ' + date + ', ' + year;
+  };
+  
+  var capitalizeFirstLetter = function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   };
   
   /***/ }),
