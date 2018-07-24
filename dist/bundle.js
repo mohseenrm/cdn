@@ -32946,6 +32946,8 @@
     return (0, _utils.capitalizeFirstLetter)(stringifyNumber(number));
   };
   
+  //test 2
+  
   /***/ }),
   
   /***/ "./src/utils/index.js":
@@ -32987,6 +32989,8 @@
   var capitalizeFirstLetter = exports.capitalizeFirstLetter = function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
+  
+  //test
   
   /***/ }),
   
