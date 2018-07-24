@@ -32428,8 +32428,12 @@
         return _axios2.default.get(url, {
           headers: { "Content-Type": "application/json" }
         }).then(function (response) {
+          var paymentData = _this2.generatePaymentCardData(response.data);
+  
+          localStorage.setItem(url, JSON.stringify(paymentData));
+  
           _this2.setState(_extends({}, _this2.state, {
-            payments: _this2.generatePaymentCardData(response.data)
+            payments: paymentData
           }));
         }).catch(function (error) {
           return console.log('ERROR: ', error);
@@ -32447,6 +32451,15 @@
           var url = 'http://localhost:50777/rest/flex-pay-estimator/' + cipherId;
   
           var data = localStorage.getItem(url);
+  
+          if (data) {
+            console.log('Using cached results');
+            var paymentData = JSON.parse(data);
+  
+            return this.setState(_extends({}, this.state, {
+              payments: paymentData
+            }));
+          }
   
           return this.fetchPaymentData(url);
         }
@@ -32758,8 +32771,6 @@
             paymentNumber = _props$paymentData.paymentNumber;
   
   
-        console.log('TEST');
-  
         return _react2.default.createElement(
           'div',
           { className: 'txt_c payment_card_wrapper' },
@@ -32799,9 +32810,10 @@
     return PaymentCard;
   }(_react2.default.Component);
   
+  // TODO: add in prop types for all components
+  
+  
   exports.default = PaymentCard;
-  
-  
   PaymentCard.propTypes = {};
   
   /***/ }),
@@ -32946,8 +32958,6 @@
     return (0, _utils.capitalizeFirstLetter)(stringifyNumber(number));
   };
   
-  //test 2
-  
   /***/ }),
   
   /***/ "./src/utils/index.js":
@@ -32989,8 +32999,6 @@
   var capitalizeFirstLetter = exports.capitalizeFirstLetter = function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-  
-  //test
   
   /***/ }),
   
