@@ -32490,7 +32490,6 @@
             { className: 'flex' },
             payments.map(function (payment, i) {
               return _react2.default.createElement(_PaymentCard2.default, {
-                iconSize: '60',
                 key: i,
                 paymentData: payment
               });
@@ -32499,7 +32498,7 @@
           _react2.default.createElement(
             'a',
             {
-              className: '',
+              className: 'app_wrapper__link',
               href: '#'
             },
             _strings.FlexPayEstimatorApp.Question
@@ -32511,7 +32510,7 @@
           ),
           _react2.default.createElement(
             'div',
-            null,
+            { className: 'app_wrapper__text' },
             _strings.FlexPayEstimatorApp.SupportDescription
           )
         );
@@ -32753,8 +32752,6 @@
       key: 'render',
       value: function render() {
         var _props$paymentData = this.props.paymentData,
-            _props$paymentData$ic = _props$paymentData.iconSize,
-            iconSize = _props$paymentData$ic === undefined ? "60" : _props$paymentData$ic,
             paymentAmount = _props$paymentData.paymentAmount,
             paymentDateText = _props$paymentData.paymentDateText,
             paymentDescription = _props$paymentData.paymentDescription,
@@ -32769,8 +32766,6 @@
             {
               'aria-hidden': 'true',
               className: 'svgicon',
-              height: iconSize,
-              width: iconSize,
               viewBox: '0 0 50 50'
             },
             _react2.default.createElement('path', { d: 'M38 6V1.5C38 0.7 37.3 0 36.5 0S35 0.7 35 1.5V6H15V1.5C15 0.7 14.3 0 13.5 0S12 0.7 12 1.5V6H1v44h48V6H38zM46 47H4V9h8v4.2c0 0.8 0.7 1.5 1.5 1.5s1.5-0.7 1.5-1.5V9h20v4.2c0 0.8 0.7 1.5 1.5 1.5s1.5-0.7 1.5-1.5V9h8V47z' }),
