@@ -32469,23 +32469,23 @@
   
         return _react2.default.createElement(
           'div',
-          { className: 'app_wrapper txt_c' },
+          { className: 'appWrapper txt_c' },
           _react2.default.createElement(_Header2.default, {
             className: '',
             displayText: _strings.FlexPayEstimatorApp.Header
           }),
           _react2.default.createElement(
             'div',
-            { className: 'app_wrapper__text txt_c' },
+            { className: 'appWrapper_text txt_c' },
             _strings.FlexPayEstimatorApp.HeaderDescription
           ),
           _react2.default.createElement(
             'div',
-            { className: 'app_wrapper__amount_container' },
+            { className: 'appWrapper_amount_container' },
             _react2.default.createElement(_InputText2.default, {
               autoFocus: true,
               callbackParent: this.amountChanged,
-              className: 'app_wrapper__amount_container__input',
+              className: 'appWrapper_amount_container_input',
               name: 'flex-pay-amount',
               placeholder: '$120'
             }),
@@ -32508,7 +32508,7 @@
           _react2.default.createElement(
             'a',
             {
-              className: 'app_wrapper__link',
+              className: 'appWrapper_link',
               href: '#'
             },
             _strings.FlexPayEstimatorApp.Question
@@ -32520,7 +32520,7 @@
           ),
           _react2.default.createElement(
             'div',
-            { className: 'app_wrapper__text' },
+            { className: 'appWrapper_text' },
             _strings.FlexPayEstimatorApp.SupportDescription
           )
         );
@@ -32769,7 +32769,7 @@
   
         return _react2.default.createElement(
           'div',
-          { className: 'txt_c payment_card_wrapper' },
+          { className: 'txt_c paymentCardWrapper' },
           _react2.default.createElement(
             'svg',
             {
