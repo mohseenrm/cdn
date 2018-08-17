@@ -32766,11 +32766,12 @@
             paymentDateText = _props$paymentData.paymentDateText,
             paymentDescription = _props$paymentData.paymentDescription,
             paymentNumber = _props$paymentData.paymentNumber;
+        var className = this.props.className;
   
   
         return _react2.default.createElement(
           'div',
-          { className: 'txt_c paymentCardWrapper' },
+          { className: 'txt_c paymentCardWrapper ' + className },
           _react2.default.createElement(
             'svg',
             {
