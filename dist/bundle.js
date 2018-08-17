@@ -32497,9 +32497,10 @@
           ),
           _react2.default.createElement(
             'div',
-            { className: 'flex' },
+            { className: 'flexrow' },
             payments.map(function (payment, i) {
               return _react2.default.createElement(_PaymentCard2.default, {
+                className: 'flexcol_4',
                 key: i,
                 paymentData: payment
               });
